@@ -14,20 +14,21 @@ async def summarize(file_path: str) -> str:
         with open(file_path, 'rb') as f:
             raw_data = f.read()
             result = chardet.detect(raw_data)
-            encoding = result['encoding'] if confidence >= 0.7 else 'utf-8'
+            encoding = result['encoding']
             confidence = result['confidence']
 
-        if confidence < 0.9:
-            raise HTTPException(status_code=400, detail="File encoding confidence too low")
+        if confidence < 0.7:
+            encoding = 'utf-8'  # Fallback to UTF-8 if confidence is low
 
-        content = raw_data.decode(encoding)
+        try:
+            content = raw_data.decode(encoding, errors='replace')  # Handle decoding errors
+        except UnicodeDecodeError:
+            raise HTTPException(status_code=400, detail="File encoding not supported or invalid byte sequences")
         
         # Dummy summary generation for demonstration
         summary = content[:200] + '...'  # Summarize the first 200 characters for demo
         return summary
 
-    except UnicodeDecodeError:
-        raise HTTPException(status_code=400, detail="File encoding not supported or invalid byte sequences")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
