@@ -1,0 +1,9 @@
+## To run it locally  
+        fastapi dev main.py
+
+## Navigate to API doc
+        [local url](http://127.0.0.1:8000/docs)
+
+
+## Meta Llama 
+        [model](https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct)
