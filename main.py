@@ -1,5 +1,6 @@
 import os
 import shutil
+from mlmodel import model
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, File, UploadFile, Form
@@ -12,6 +13,9 @@ app = FastAPI(
     description="API For Allison AI",
     version="0.1.0"
 )
+
+app.include_router(model, prefix="/api")
+
 
 app.add_middleware(
     CORSMiddleware,

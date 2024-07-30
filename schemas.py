@@ -19,6 +19,8 @@ class BookSummaryCreate(BaseModel):
     book_id: int
     text_summary: str
     audio_summary: Optional[str]
+    
+
 
 class BookQuery(BaseModel):
     query: str
