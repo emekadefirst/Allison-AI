@@ -74,9 +74,9 @@ async def create_book_endpoint(
         author_name=author_name,
         description=description,
         categories=categories,
-        release_date=release_date,
         file=file_path,
-        cover_image=cover_image_path
+        cover_image=cover_image_path,
+        release_date=release_date
     )
 
 @app.get("/books/")

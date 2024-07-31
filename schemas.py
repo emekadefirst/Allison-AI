@@ -6,7 +6,9 @@ class BookCreate(BaseModel):
     author_name: str
     description: str
     categories: str
-
+    release_date: str  
+    
+    
 class BookUpdate(BaseModel):
     title: Optional[str]
     author_name: Optional[str]

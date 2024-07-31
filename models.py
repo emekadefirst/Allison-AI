@@ -6,7 +6,7 @@ class Book(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     title: str = Field(index=True)
     author_name: str
-    description: str 
+    description: str
     categories: str
     release_date: str
     file: str
