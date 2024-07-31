@@ -1,11 +1,11 @@
 import os
 import shutil
-from mlmodel import model
+from summary import model
 from typing import Optional
+from schemas import BookUpdate, BookQuery
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, File, UploadFile, Form
-from schemas import BookCreate, BookUpdate, BookSummaryCreate, BookQuery
-from sessions import create_book, all_books, get_book_by_id, update_book, delete_book, search_book, create_book_summary, all_book_summaries, get_book_summary_by_id
+from sessions import create_book, all_books, get_book_by_id, update_book, delete_book, search_book
 
 
 app = FastAPI(
@@ -29,6 +29,11 @@ BOOK_IMAGE_DIRECTORY = "./book_image/"
 if not os.path.exists(BOOK_IMAGE_DIRECTORY):
     os.makedirs(BOOK_IMAGE_DIRECTORY)
     
+AUDIO_SUMMARY_DIR = "./book_audio_summary/"
+if not os.path.exists(AUDIO_SUMMARY_DIR):
+    os.makedirs(AUDIO_SUMMARY_DIR)
+
+
 BOOK_FILE_DIRECTORY = "./book_file/"
 if not os.path.exists(BOOK_FILE_DIRECTORY):
     os.makedirs(BOOK_FILE_DIRECTORY)
@@ -130,17 +135,4 @@ def delete_book_endpoint(book_id: int):
 def search_book_endpoint(query: BookQuery):
     return search_book(query)
 
-@app.post("/book_summaries/")
-def create_book_summary_endpoint(summary_data: BookSummaryCreate):
-    return create_book_summary(summary_data)
 
-@app.get("/book_summaries/")
-def all_book_summaries_endpoint():
-    return all_book_summaries()
-
-@app.get("/book_summaries/{summary_id}")
-def get_book_summary_by_id_endpoint(summary_id: int):
-    summary = get_book_summary_by_id(summary_id)
-    if summary is None:
-        raise HTTPException(status_code=404, detail="Book summary not found")
-    return summary
