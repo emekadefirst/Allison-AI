@@ -11,3 +11,13 @@
         [model](https://ai.google.dev/gemini-api/docs/get-started/tutorial?lang=python)
 
 
+So basically this project is Built using FastAPI for super fast RESTFUL API development and documentation, Sqlmodel(built ontop of SQLAlchemy), PostgrSQL from Render for robust DMS
+Google gemini model for summarization of books  and gTTS python package for text to sound.
+
+This project allows users to upload books, generation text and audio summaries of the book 
+Also users can perform CRUD on the Books and query it, i.e built-in search endpoint.
+
+
+
+
+
