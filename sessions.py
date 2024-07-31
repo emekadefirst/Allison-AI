@@ -3,9 +3,9 @@ from models import Book, BookSummary
 from database import engine
 
 """Book sessions to perform CRUD operations"""
-def create_book(title, author_name, description, categories, release_date, file, cover_image):
+def create_book(title, author_name, description, categories, file, cover_image):
     with Session(engine) as session:
-        data = Book(title=title, author_name=author_name, description=description, categories=categories, release_date=release_date, file=file, cover_image=cover_image)
+        data = Book(title=title, author_name=author_name, description=description, categories=categories, file=file, cover_image=cover_image)
         session.add(data)
         session.commit()
         return "Book created"
@@ -55,7 +55,7 @@ def delete_book(book_id):
             return f'Book with id {book_id} has been successfully deleted'
         return f"No book found with id: {book_id}"
 
-def search_book(query_input):
+def search_book(query_input: str):
     with Session(engine) as session:
         statement = select(Book).where(
             (Book.title.contains(query_input)) |

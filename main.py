@@ -1,7 +1,10 @@
 import os
 import shutil
+from typing import List
 from summary import model
 from typing import Optional
+from summary import summarize
+from models import Book
 from schemas import BookUpdate, BookQuery
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, File, UploadFile, Form
@@ -131,8 +134,9 @@ def delete_book_endpoint(book_id: int):
         raise HTTPException(status_code=404, detail=result)
     return result
 
-@app.post("/books/search")
+@app.post("/books/search", response_model=List[Book])
 def search_book_endpoint(query: BookQuery):
-    return search_book(query)
+    results = search_book(query.query)
+    return results
 
 

@@ -3,10 +3,9 @@ import fitz
 from gtts import gTTS
 from dotenv import load_dotenv
 import google.generativeai as genai
-from schemas import BookSummaryCreate
 from fastapi.responses import JSONResponse
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from sessions import create_book_summary, all_book_summaries, get_book_summary_by_id
+from sessions import create_book_summary, all_book_summaries, get_book_summary_by_id, get_book_by_id
 
 
 model = APIRouter()
@@ -51,7 +50,7 @@ async def summarize_book(file: UploadFile = File(...)):
         with open(file_path, "wb") as buffer:
             buffer.write(await file.read())
         summary = await summarize(file_path)
-        tts = gTTS(text=summary, lang='en')
+        tts = gTTS(text=summary, slow=False, lang='en')
         audio_file = os.path.join(AUDIO_SUMMARY_DIR, f"{file.filename}_summary.mp3")
         tts.save(audio_file)
         return {"summary": summary, "audio_file": audio_file}
@@ -60,18 +59,32 @@ async def summarize_book(file: UploadFile = File(...)):
     finally:
         if os.path.exists(file_path):
             os.remove(file_path)
-            
+     
+# class BookSummaryCreate(BaseModel):
+#     book_id: int
+#     text_summary: str
+#     audio_summary: Optional[str]       
 """For existing file"""
-@model.post("/book_summaries/")
-def create_book_summary_endpoint(summary_data: BookSummaryCreate):
-    return create_book_summary(summary_data)
+@model.post("/book_summaries/{book_id}")
+async def create_book_summary_endpoint(book_id: int):
+    book = get_book_by_id(book_id)
+    if book:
+        book_file = book.file
+        book_title = book.title
+        summary = await summarize(book_file)  # Await the async function
+        tts = gTTS(text=summary, lang='en')
+        audio_file = os.path.join(AUDIO_SUMMARY_DIR, f"{book_title}_summary.mp3")
+        tts.save(audio_file)
+        create_book_summary(book_id=book_id, text_summary=summary, audio_summary=audio_file)
+        return {"summary": summary, "audio_file": audio_file}
+    raise HTTPException(status_code=404, detail="Book not found")
 
 @model.get("/book_summaries/")
 def all_book_summaries_endpoint():
     return all_book_summaries()
 
 @model.get("/book_summaries/{summary_id}")
-def get_book_summary_by_id_endpoint(summary_id: int):
+def get_book_summary_by_id(summary_id: int):
     summary = get_book_summary_by_id(summary_id)
     if summary is None:
         raise HTTPException(status_code=404, detail="Book summary not found")
